@@ -46,6 +46,7 @@ input[type=range][orient=vertical]{
 	top:2%;
 	right:2%;
 	text-align: center;
+	background : rgb(10,10,100);
 }
 #reponse{
   position : absolute;
