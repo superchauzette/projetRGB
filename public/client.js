@@ -2,29 +2,33 @@ $(function() {
 
 	var widthTotal = $('body')[0].clientWidth;
 	var x = 0;
-	xsv2rgb(x,100,50);	
+	var v = 50;
 
-	$( "#draggable" ).draggable({
+	xsv2rgb(x,100,v);	
+
+	$("#draggable").draggable({
 		scroll: false, 
 		//axis: "x" ,
 		stop: function(d) {
-			x =  Math.round( (d.clientX/widthTotal)*100 );
-			xsv2rgb(x,100,50);	
+			x = Math.round( (d.clientX/widthTotal)*100 );
+			xsv2rgb(x,100,v);	
 		}	 
 	});
 
-	$('#lumisosite').on("change", function(d){			
-		xsv2rgb( x, 100, $(this)[0].value );
+	$("#lumisosite").on("change", function(d){	
+		v = $(this)[0].value;	
+		xsv2rgb( x, 100, v );
 	});
+
 	$("#btnoff").on("click", function(){
 		$('#lumisosite')[0].value = 0;
 		xsv2rgb(0,0,0);
-	})
+	});
 
 	$("#btnon").on("click", function(){
 		$('#lumisosite')[0].value = 100;
 		xsv2rgb(0,0,100);
-	})
+	});
 
 });
 
@@ -42,7 +46,7 @@ function xsv2rgb(x,s,v){
 	var b = Math.round(rgb[2]);
 
 	$('#info').html( x +"% </br> lumisosite : "+ v + "%")
-			  .css("background-color", "rgb("+ r +","+ g +","+ b +")" );
+			  .css( "background-color", "rgb("+ r +","+ g +","+ b +")" );
 
 	//pwm(rgb[0], rgb[1], rgb[2]);
 }
