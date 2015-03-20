@@ -9,6 +9,7 @@
     "express": "3.4.8",
     "pi-blaster.js": "0.0.2",
     "qtouch": "0.0.0",
-    "color-convert": "^0.3.4"
+    "color-convert": "^0.3.4",
+    "cron": "^1.0.9"
   }
 }

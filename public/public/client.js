@@ -5,7 +5,6 @@ $(function() {
 	var widthTotal = $('#colorbackground').width();
 	var x = 0;
 	var v = 50;
-	var sunrise = true;
 
 
 	$("#lumisosite").on("change", function(d){	
@@ -21,7 +20,9 @@ $(function() {
 	$("#btn-off").on("click", function(){
 		$('#lumisosite')[0].value = 0;
 		pwmXSV(0,0,0);
-	});	
+	});
+
+	var sunrise = true;
 
 	$('#btn-leverSoleil').on('click',function(){
 		if(sunrise){
@@ -72,40 +73,33 @@ $(function() {
 		chimneyFire();
 	});
 
-	$("#zoneStop").on("click",function(){
-		stop();
-	});
-
-
-
 //****************************************************************************//	
 
 	//input.clockpicker('show').clockpicker('toggleView', 'minutes');
 	//input.clockpicker('show').clockpicker('toggleView', 'hours');
 
 //init
-	getInfoReveil().then(function(data){
+	$.get("/reveil").then(function(data){
 
-		// init le switchOnOff
+		// init le switchOnOff ne marche pas ????? 
 		$switchOnOff.prop("checked", data.on);
 
 		// init heure
 		input.val( data.hour );
 
-		// init jour	
+		// init jour
 		var dayInit = data.day.replace("0","7"); // dimanche
 		var dayFormater = [];
 		dayInit.split(",").forEach(function(d){
-			dayFormater.push( parseInt(d) )
+			dayFormater.push( parseInt(d)-1 )
 		}); 
 		$('input:checkbox').each(function(i){
 			if( dayFormater.indexOf(i) >= 0 ){
-				$($('input:checkbox')[i]).prop("checked","checked"); 
+				$($('input:checkbox')[i]).attr('checked',"checked"); 
 			}
 		});
 	});
 
-// ON/OFF Reveil
 	$switchOnOff.on("change",function(d){										
 		activeReveil($(this).prop("checked"))
 	});
@@ -120,18 +114,15 @@ $(function() {
 	});
 	
 // picker day
-	$('#Jours input:checkbox').on("change",function(d){	
-		console.log( listday() )									
+	$('#Jours input:checkbox').on("change",function(d){										
 		mettreReveil( input.val(), listday() );
 	});
 
 
 	function listday(){
-		var dayCocher =[];
+		var dayCocher = [];
 		$('input:checkbox:checked').each(function(d) {	
-			if( $(this).attr("tonumber") !== undefined ){
-				dayCocher.push( $(this).attr("tonumber") );
-			}			
+			dayCocher.push( $(this).attr("tonumber") );
 		});
 		return dayCocher;
 	}
@@ -141,75 +132,62 @@ $(function() {
 
 //***********************************************************//	
 
-function pwm(red, green, blue){
-    return $.post( "/pwm", {red : red, green : green, blue: blue} )
-	    .then(function( data ) {
-	       console.log(data)  
-	    });
+function activeReveil(bool){
+	$.post("/activerreveil", {on : bool} )
+		.then(function(data) {
+			console.log(data)
+		});
 }
-
-function pwmHSV(h,s,v){
-	return $.post( "/pwmhsv", {h : h, s : s, v: v} )
-	    .then(function( data ) {
-	       console.log(data)  
-	});
-}
-
-function pwmXSV(x,s,v){
-	return pwmHSV( x*360/100 , s, v);
-}
-
-function pwmKelvin(k){
-	return $.post( "/pwmkelvin", {k : k} )
-	    .then(function( data ) {
-	       console.log(data)  
-	});
-}
-
 
 function leverSoleil(){
-	return $.post("/sunrise")
+	$.get("/sunrise")
 		.then(function(data) {
 				console.log(data);
 		});
 }
 
 function coucherSoleil(){
-	return $.post("/sunset")
+	$.get("/sunset")
 		.then(function(data) {
 			console.log(data);
 		});
 }
 
 function chimneyFire(){
-	return $.post("/chimneyFire")
+	$.get("/chimneyFire")
 		.then(function(data) {
 			console.log(data);
 		});
 }
-
-function stop(){
-	return $.post("/stop")
-		.then(function(data) {
-			console.log(data);
-		});
-}
-
 
 function mettreReveil(heure , jours){
-	return $.post("/reveil", {hour : heure, day : jours.join(',')} )
+	$.post("/reveil", {hour : heure, day : jours.join(',')} )
 		.then(function(data) {
 			console.log(data);
 		});
 }
 
-function activeReveil(bool){
-	return $.post("/activerreveil", {on : bool} )
-		.then(function(data) {
-			console.log(data)
-		});
+function pwm(red, green, blue){
+    $.get( "/pwm", {red : red, green : green, blue: blue} )
+	    .then(function( data ) {
+	       console.log(data)  
+	    });
 }
 
-function getInfoReveil(){
-	return $.get("/reveil");
+function pwmHSV(h,s,v){
+	$.get( "/pwmhsv", {h : h, s : s, v: v} )
+	    .then(function( data ) {
+	       console.log(data)  
+	});
+}
+
+function pwmXSV(x,s,v){
+	pwmHSV( x*360/100 , s, v);
+}
+
+function pwmKelvin(k){
+	$.get( "/pwmkelvin", {k : k} )
+	    .then(function( data ) {
+	       console.log(data)  
+	});
 }
